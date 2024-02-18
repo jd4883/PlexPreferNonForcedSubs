@@ -28,7 +28,7 @@ def create_plex_session():
 def retrieve_subtitle_stream(item):
     try:
         return item.subtitleStreams()
-    except:
+    except: # TODO: exact except would be better design
         print(f"Error looking up {item}, sleeping for 5 seconds and trying again")
         time.sleep(5)
         retrieve_subtitle_stream(item)
