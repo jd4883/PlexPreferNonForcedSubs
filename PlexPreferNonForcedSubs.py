@@ -26,14 +26,13 @@ def create_plex_session():
     return PlexServer(baseurl, token)
 
 def retrieve_subtitle_stream(item):
-    while 1==1:
-        try:
-            english_subs = item.subtitleStreams()
-            print(f"successfully retrieved subtitle stream from {item}")
-            break
-        except:
-            print(f"Error looking up {item}, sleeping for 10 seconds and trying again")
-            time.sleep(10)
+    try:
+        return item.subtitleStreams()
+    except:
+        print(f"Error looking up {item}, sleeping for 5 seconds and trying again")
+        time.sleep(5)
+        retrieve_subtitle_stream(item)
+        
 
 
 def parse_movies(plex):
