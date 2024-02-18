@@ -1,4 +1,4 @@
-FROM    python:latest
+FROM 	--platform=linux/amd64 python:latest
 ENV     \
         PLEX_TOKEN="" \
         PLEX_URL="http://localhost:32400"
