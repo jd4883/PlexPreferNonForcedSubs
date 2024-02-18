@@ -2,6 +2,7 @@ from plexapi.server import PlexServer
 from plexapi.media import SubtitleStream
 import os
 import traceback
+import time
 
 def report_error(error_message):
     github_issue_url = "https://github.com/RileyXX/PlexPreferNonForcedSubs/issues/new?template=bug_report.yml"
@@ -24,6 +25,17 @@ def create_plex_session():
         token = os.environ["PLEX_TOKEN"] = input("Enter your Plex token: ")            
     return PlexServer(baseurl, token)
 
+def retrieve_subtitle_stream(item):
+    while 1==1:
+        try:
+            english_subs = item.subtitleStreams()
+            print(f"successfully retrieved subtitle stream from {item}")
+            break
+        except:
+            print(f"Error looking up {item}, sleeping for 10 seconds and trying again")
+            time.sleep(10)
+
+
 def parse_movies(plex):
     table_headers = ['Title', 'Year', 'Status', 'Changes']
     title_width = 70
@@ -37,7 +49,7 @@ def parse_movies(plex):
     for section in plex.library.sections():
         if section.type == 'movie':
             for movie in section.all():
-                english_subs = movie.subtitleStreams()
+                english_subs = retrieve_subtitle_stream(movie)
                 if english_subs is not None:
                     english_subs = [stream for stream in english_subs if stream is not None and stream.languageCode == 'eng']
                     non_forced_english_subs = [stream for stream in english_subs if stream is not None and (not stream.forced or (hasattr(stream, 'title') and 'forced' not in (getattr(stream, 'title', '') or '').lower()))]
@@ -73,7 +85,7 @@ def parse_shows(plex):
         if section.type == 'show':
             for show in section.all():
                 for episode in show.episodes():
-                    english_subs = episode.subtitleStreams()
+                    english_subs = retrieve_subtitle_stream(episode)
                     if english_subs is not None:
                         english_subs = [stream for stream in english_subs if stream is not None and stream.languageCode == 'eng']
                         non_forced_english_subs = [stream for stream in english_subs if stream is not None and (not stream.forced or (hasattr(stream, 'title') and 'forced' not in (getattr(stream, 'title', '') or '').lower()))]
